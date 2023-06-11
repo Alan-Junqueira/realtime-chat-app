@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/Button"
 import { upstashRedis } from "@/services/upstash-redis"
 
 export default async function HomePage() {
@@ -5,6 +6,7 @@ export default async function HomePage() {
   return (
     <main>
       <p>Hello</p>
+      <Button>Teste</Button>
     </main>
   )
 }
