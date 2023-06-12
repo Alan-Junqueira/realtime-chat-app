@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import './globals.css'
+import { Providers } from '@/components/Providers'
 
 export const metadata = {
   title: 'Create Next App',
@@ -9,7 +10,11 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-br">
-      <body>{children}</body>
+      <body>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
   )
 }
