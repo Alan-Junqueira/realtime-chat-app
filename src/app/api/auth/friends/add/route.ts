@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       return NextResponse.json('You cannot add yourself as a friend.', { status: 400 })
     }
 
-    
+
 
     // valid request
 
