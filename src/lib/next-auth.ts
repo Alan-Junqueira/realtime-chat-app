@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: getGoogleCredentials().clientId,
-      clientSecret: getGoogleCredentials().clientSecret
+      clientSecret: getGoogleCredentials().clientSecret,
     })
   ],
   callbacks: {
@@ -50,6 +50,9 @@ export const authOptions: NextAuthOptions = {
       }
     },
     async session({ session, token }) {
+      console.log("SESSION ==> ", session)
+      console.log("TOKEN ==> ", token)
+
       if (token) {
         session.user.id = token.id
         session.user.name = token.name
