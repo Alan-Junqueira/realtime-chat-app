@@ -12,11 +12,12 @@ export default async function DashboardRequestsPage() {
 
   const incomingFriendsRequests = await Promise.all(
     incomingSenderIds.map(async (senderId) => {
+      const sender = await fetchRedis('get', `user:${senderId}`) as string
       // eslint-disable-next-line no-undef
-      const sender = await fetchRedis('get', `user:${senderId}`) as User
+      const senderParsed = JSON.parse(sender) as User
       return {
         senderId,
-        senderEmail: sender.email
+        senderEmail: senderParsed.email
       }
     })
   )

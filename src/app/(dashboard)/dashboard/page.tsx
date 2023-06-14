@@ -8,7 +8,6 @@ export default async function DashboardPage() {
   return (
     <div>
       <p>Dashboard</p>
-      <pre>{JSON.stringify(session)}</pre>
     </div>
   )
 }
