@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
     const { email: emailToAdd } = addFriendValidator.parse(body.email)
     
-    const idToAdd = await fetchRedis('get', `uer:email:${emailToAdd}`)
+    const idToAdd = await fetchRedis('get', `user:email:${emailToAdd}`)
 
     if (!idToAdd) {
       return new NextResponse('This person does not exist.', { status: 400 })
