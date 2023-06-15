@@ -1,6 +1,7 @@
 import { FriendRequestSidebarOptions } from '@/components/FriendRequestSidebarOptions'
 import { Icons, TIcon } from '@/components/Icons'
 import { SignOutButton } from '@/components/SignOutButton'
+import { getFriendsByUserId } from '@/helpers/get-friends-by-user-id'
 import { fetchRedis } from '@/helpers/redis'
 import { authOptions } from '@/lib/next-auth'
 import { getServerSession } from 'next-auth'
@@ -36,6 +37,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   if (!session) {
     notFound()
   }
+
+  const friends = await getFriendsByUserId(session.user.id)
 
   // eslint-disable-next-line no-undef
   const unseenRequestCount = (await fetchRedis('smembers', `user:${session.user.id}:incoming_friend_requests`) as User[]).length
