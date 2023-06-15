@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     const body = await req.json()
 
     const { email: emailToAdd } = addFriendValidator.parse(body.email)
-    
+
     const idToAdd = await fetchRedis('get', `user:email:${emailToAdd}`)
 
     if (!idToAdd) {
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     }
 
     // * Check if user already added
-    const isAlreadyAdded = await fetchRedis('sismember', `user:${idToAdd}:incoming_friend_request`, session.user.id)
+    const isAlreadyAdded = await fetchRedis('sismember', `user:${idToAdd}:incoming_friend_requests`, session.user.id)
 
     if (isAlreadyAdded) {
       return new NextResponse("Already added this user.", { status: 400 })
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 
 
     // * valid request, send friend request.
-    upstashRedis.sadd(`user:${idToAdd}:incoming_friend_request`, session.user.id)
+    upstashRedis.sadd(`user:${idToAdd}:incoming_friend_requests`, session.user.id)
 
     return new NextResponse('OK')
 

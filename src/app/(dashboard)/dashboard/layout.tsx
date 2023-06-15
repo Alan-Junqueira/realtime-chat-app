@@ -38,7 +38,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   }
 
   // eslint-disable-next-line no-undef
-  const unseenRequestCount = (await fetchRedis('smembers', `user:${session.user.id}:incoming_friend_request`) as User[]).length
+  const unseenRequestCount = (await fetchRedis('smembers', `user:${session.user.id}:incoming_friend_requests`) as User[]).length
 
   return (
     <div className='w-full flex h-screen'>

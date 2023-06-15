@@ -8,7 +8,7 @@ export default async function DashboardRequestsPage() {
   const session = await getServerSession(authOptions)
   if (!session) notFound()
 
-  const incomingSenderIds = await fetchRedis('smembers', `user:${session.user.id}:incoming_friend_request`) as string[]
+  const incomingSenderIds = await fetchRedis('smembers', `user:${session.user.id}:incoming_friend_requests`) as string[]
 
   const incomingFriendsRequests = await Promise.all(
     incomingSenderIds.map(async (senderId) => {
