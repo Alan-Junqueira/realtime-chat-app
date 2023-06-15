@@ -1,5 +1,6 @@
 import { fetchRedis } from "@/helpers/redis"
 import { authOptions } from "@/lib/next-auth"
+import { messageArrayValidator } from "@/lib/validations/message"
 import { upstashRedis } from "@/services/upstash-redis"
 import { getServerSession } from "next-auth"
 import { notFound } from "next/navigation"
@@ -24,7 +25,9 @@ const getChatMessages = async (chatId: string) => {
 
     const reverseDbMessages = dbMessages.reverse()
 
-    const messages = 
+    const messages = messageArrayValidator.parse(reverseDbMessages)
+
+    return messages
   } catch (error) {
     notFound()
   }
