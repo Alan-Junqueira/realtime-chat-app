@@ -20,7 +20,7 @@ export const FriendRequests = ({ incomingFriendRequests, sessionId }: IFriendReq
   const router = useRouter()
 
   const handleAcceptFriend = async (senderId: string) => {
-    await axios.post('/api/requests/accept', {
+    await axios.post('/api/friends/accept', {
       id: senderId
     })
 
@@ -30,7 +30,7 @@ export const FriendRequests = ({ incomingFriendRequests, sessionId }: IFriendReq
   }
 
   const handleDenyFriend = async (senderId: string) => {
-    await axios.post('/api/requests/deny', {
+    await axios.post('/api/friends/deny', {
       id: senderId
     })
 
@@ -55,6 +55,7 @@ export const FriendRequests = ({ incomingFriendRequests, sessionId }: IFriendReq
             <UserPlus className="text-black" />
             <p className="font-medium text-lg">{request.senderEmail}</p>
             <button
+              onClick={() => handleAcceptFriend(request.senderId)}
               className="w-8 h-8 bg-indigo-600 hover:bg-indigo-700 grid place-items-center rounded-full transition hover:shadow-md"
               aria-label="accept friend"
             >
@@ -62,6 +63,7 @@ export const FriendRequests = ({ incomingFriendRequests, sessionId }: IFriendReq
             </button>
 
             <button
+              onClick={() => handleDenyFriend(request.senderId)}
               className="w-8 h-8 bg-red-600 hover:bg-indigo-700 grid place-items-center rounded-full transition hover:shadow-md"
               aria-label="deny friend"
             >
