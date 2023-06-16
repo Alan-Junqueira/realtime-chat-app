@@ -1,3 +1,4 @@
+import { ChatInput } from "@/components/ChatInput"
 import { Messages } from "@/components/Messages"
 import { fetchRedis } from "@/helpers/redis"
 import { authOptions } from "@/lib/next-auth"
@@ -95,7 +96,8 @@ export default async function DashboardChatPage({ params: { chatId } }: IDashboa
         </div>
       </div>
 
-      <Messages />
+      <Messages initialMessages={initialMessages} sessionId={session.user.id}/>
+      <ChatInput chatPartner={chatPartner}/>
     </div>
   )
 }
