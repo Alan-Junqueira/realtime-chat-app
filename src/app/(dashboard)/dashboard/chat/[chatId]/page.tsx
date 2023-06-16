@@ -96,8 +96,8 @@ export default async function DashboardChatPage({ params: { chatId } }: IDashboa
         </div>
       </div>
 
-      <Messages initialMessages={initialMessages} sessionId={session.user.id}/>
-      <ChatInput chatPartner={chatPartner}/>
+      <Messages initialMessages={initialMessages} sessionId={session.user.id} />
+      <ChatInput chatPartner={chatPartner} chatId={chatId} />
     </div>
   )
 }

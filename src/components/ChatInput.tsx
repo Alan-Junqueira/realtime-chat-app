@@ -2,19 +2,38 @@
 
 import { useRef, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
+import { Button } from './ui/Button';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 interface IChatInput {
   // eslint-disable-next-line no-undef
   chatPartner: User
+  chatId: string
 }
 
-export const ChatInput = ({ chatPartner }: IChatInput) => {
+export const ChatInput = ({ chatPartner, chatId }: IChatInput) => {
   const [textAreaInput, setTextAreaInput] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
+    setIsLoading(true)
 
+    try {
+      await axios.post("/api/message/send", {
+        text: textAreaInput,
+        chatId
+      })
+
+      setTextAreaInput('')
+      textAreaRef.current?.focus()
+    } catch (error) {
+      toast.error('Something went wrong. Please try again later.')
+    } finally {
+      setIsLoading(false)
+    }
   }
   return (
     <div
@@ -37,6 +56,26 @@ export const ChatInput = ({ chatPartner }: IChatInput) => {
           placeholder={`Message ${chatPartner.name}`}
           className='block w-full resize-none border-0 bg-transparent text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:py-1.5 sm:text-sm sm:leading-6'
         />
+
+        <div
+          onClick={() => textAreaRef.current?.focus()}
+          className='py-2'
+          aria-hidden='true'
+        >
+          <div className='py-px'>
+            <div className='h-9' />
+          </div>
+        </div>
+
+        <div
+          className="absolute right-0 bottom-0 flex justify-between py-2 pl-3 pr-2"
+        >
+          <div
+            className='flex-shrink-0'
+          >
+            <Button isLoading={isLoading} onClick={sendMessage} type='submit'>Post</Button>
+          </div>
+        </div>
       </div>
     </div>
   )
