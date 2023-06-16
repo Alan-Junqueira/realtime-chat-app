@@ -1,3 +1,4 @@
+import { Messages } from "@/components/Messages"
 import { fetchRedis } from "@/helpers/redis"
 import { authOptions } from "@/lib/next-auth"
 import { messageArrayValidator } from "@/lib/validations/message"
@@ -52,7 +53,7 @@ export default async function DashboardChatPage({ params: { chatId } }: IDashboa
   const initialMessages = await getChatMessages(chatId)
   return (
     <div
-      className="flex-1 justify-between flex flex-col h-full max-h-[calc(100vh - 6rem)]"
+      className="flex-1 justify-between flex flex-col h-full max-h-[calc(100vh-6rem)]"
     >
       <div
         className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200"
@@ -93,6 +94,8 @@ export default async function DashboardChatPage({ params: { chatId } }: IDashboa
           </div>
         </div>
       </div>
+
+      <Messages />
     </div>
   )
 }
