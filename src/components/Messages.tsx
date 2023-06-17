@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { Message } from '@/lib/validations/message'
+import { format } from 'date-fns'
 import { useRef, useState } from 'react'
 
 interface IMessages {
@@ -13,6 +14,10 @@ export const Messages = ({ initialMessages, sessionId }: IMessages) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
 
   const scrollDownRef = useRef<HTMLDivElement | null>(null)
+
+  const formatTimestamp = (timestamp: number) => {
+    return format(timestamp, "HH:mm")
+  }
   return (
     <div
       id='messages'
@@ -22,9 +27,9 @@ export const Messages = ({ initialMessages, sessionId }: IMessages) => {
         ref={scrollDownRef}
       />
       {messages.map((message, index) => {
-        const isCurrentUser = message.senderId == sessionId
+        const isCurrentUser = message.senderId === sessionId
 
-        const hasNextMessageFromSameUser = messages[index - 1].senderId === messages[index].senderId
+        const hasNextMessageFromSameUser = messages[index - 1]?.senderId === messages[index].senderId
 
         return (
           <div
@@ -55,7 +60,7 @@ export const Messages = ({ initialMessages, sessionId }: IMessages) => {
                   <span
                     className='ml-2 text-sm text-gray-400'
                   >
-                    {message.timestamp}
+                    {formatTimestamp(message.timestamp)}
                   </span>
                 </span>
               </div>
