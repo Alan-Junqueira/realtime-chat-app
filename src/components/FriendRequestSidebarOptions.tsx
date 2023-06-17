@@ -1,8 +1,10 @@
 "use client"
 
+import { pusherClient } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 import { User } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface IFriendRequestSidebarOptions {
   initialUnseenRequestCount: number
@@ -14,6 +16,23 @@ export const FriendRequestSidebarOptions = ({
   sessionId
 }: IFriendRequestSidebarOptions) => {
   const [unseenRequestCount, setUnseenRequestCount] = useState<number>(initialUnseenRequestCount);
+
+  useEffect(() => {
+    pusherClient.subscribe(toPusherKey(`user:${sessionId}:incoming_friend_requests`))
+
+    // eslint-disable-next-line no-undef
+    const friendRequestHandler = () => {
+      setUnseenRequestCount(prev => prev + 1)
+    }
+
+    pusherClient.bind('incoming_friend_requests', friendRequestHandler)
+
+    return () => {
+      pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:incoming_friend_requests`))
+      pusherClient.unbind('incoming_friend_requests', friendRequestHandler)
+    }
+  }, [sessionId])
+
   return (
     <Link
       href="/dashboard/requests"
