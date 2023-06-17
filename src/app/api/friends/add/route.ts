@@ -1,5 +1,7 @@
 import { fetchRedis } from "@/helpers/redis"
 import { authOptions } from "@/lib/next-auth"
+import { pusherServer } from "@/lib/pusher"
+import { toPusherKey } from "@/lib/utils"
 import { addFriendValidator } from "@/lib/validations/add-friend"
 import { upstashRedis } from "@/services/upstash-redis"
 import { getServerSession } from "next-auth"
@@ -19,8 +21,6 @@ export async function POST(req: Request) {
     }
 
     const session = await getServerSession(authOptions)
-
-    console.log("session ==>>", session)
 
     if (!session) {
       return new NextResponse('Unauthorized.', { status: 401 })
@@ -44,8 +44,16 @@ export async function POST(req: Request) {
       return new NextResponse("Already friends with this user.", { status: 400 })
     }
 
-
     // * valid request, send friend request.
+    pusherServer.trigger(
+      toPusherKey(`user:${idToAdd}:incoming_friend_requests`),
+      "incoming_friend_requests",
+      {
+        senderId: session.user.id,
+        senderEmail: session.user.email
+      }
+    );
+
     upstashRedis.sadd(`user:${idToAdd}:incoming_friend_requests`, session.user.id)
 
     return new NextResponse('OK')

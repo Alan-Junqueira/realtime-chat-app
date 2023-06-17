@@ -38,8 +38,6 @@ export const authOptions: NextAuthOptions = {
       // eslint-disable-next-line no-undef
       const dbUserResult = await fetchRedis('get', `user:${token.id}`) as string | null
 
-      console.log("dbUserResult", dbUserResult)
-
       if (!dbUserResult) {
         token.id = user.id
         return token

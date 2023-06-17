@@ -21,11 +21,14 @@ export const FriendRequests = ({ incomingFriendRequests, sessionId }: IFriendReq
 
   const router = useRouter()
 
+  console.log(friendRequests)
+
   useEffect(() => {
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:incoming_friend_requests`))
 
-    const friendRequestHandler = () => {
-
+    // eslint-disable-next-line no-undef
+    const friendRequestHandler = ({ senderId, senderEmail }: IncomingFriendRequest) => {
+      setFriendRequests(prev => [...prev, { senderId, senderEmail }])
     }
 
     pusherClient.bind('incoming_friend_requests', friendRequestHandler)
