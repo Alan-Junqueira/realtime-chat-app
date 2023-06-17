@@ -3,14 +3,23 @@
 import { cn } from '@/lib/utils'
 import { Message } from '@/lib/validations/message'
 import { format } from 'date-fns'
+import Image from 'next/image'
 import { useRef, useState } from 'react'
 
 interface IMessages {
   initialMessages: Message[]
   sessionId: string
+  sessionImage?: string | null
+  // eslint-disable-next-line no-undef
+  chatPartner: User
 }
 
-export const Messages = ({ initialMessages, sessionId }: IMessages) => {
+export const Messages = ({
+  initialMessages,
+  sessionId,
+  chatPartner,
+  sessionImage
+}: IMessages) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
 
   const scrollDownRef = useRef<HTMLDivElement | null>(null)
@@ -63,6 +72,21 @@ export const Messages = ({ initialMessages, sessionId }: IMessages) => {
                     {formatTimestamp(message.timestamp)}
                   </span>
                 </span>
+              </div>
+
+              <div
+                className={cn('relative w-6 h-6', {
+                  'order-2': isCurrentUser,
+                  'order-1': !isCurrentUser,
+                  'invisible': hasNextMessageFromSameUser
+                })}>
+                <Image
+                  fill
+                  src={isCurrentUser ? (sessionImage as string) : chatPartner.image}
+                  alt='Profile picture'
+                  referrerPolicy="no-referrer"
+                  className='rounded-full'
+                />
               </div>
             </div>
           </div>
