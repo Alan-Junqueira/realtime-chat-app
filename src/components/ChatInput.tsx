@@ -19,6 +19,7 @@ export const ChatInput = ({ chatPartner, chatId }: IChatInput) => {
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
 
   const sendMessage = async () => {
+    if (!textAreaInput) return
     setIsLoading(true)
 
     try {
@@ -73,7 +74,7 @@ export const ChatInput = ({ chatPartner, chatId }: IChatInput) => {
           <div
             className='flex-shrink-0'
           >
-            <Button isLoading={isLoading} onClick={sendMessage} type='submit'>Post</Button>
+            <Button isLoading={isLoading} onClick={sendMessage} type='submit' disabled={!textAreaInput}>Post</Button>
           </div>
         </div>
       </div>
