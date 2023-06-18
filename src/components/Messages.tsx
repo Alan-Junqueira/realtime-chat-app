@@ -1,14 +1,16 @@
 "use client"
 
-import { cn } from '@/lib/utils'
+import { pusherClient } from '@/lib/pusher'
+import { cn, toPusherKey } from '@/lib/utils'
 import { Message } from '@/lib/validations/message'
 import { format } from 'date-fns'
 import Image from 'next/image'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface IMessages {
   initialMessages: Message[]
   sessionId: string
+  chatId: string
   sessionImage?: string | null
   // eslint-disable-next-line no-undef
   chatPartner: User
@@ -18,6 +20,7 @@ export const Messages = ({
   initialMessages,
   sessionId,
   chatPartner,
+  chatId,
   sessionImage
 }: IMessages) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
@@ -27,6 +30,23 @@ export const Messages = ({
   const formatTimestamp = (timestamp: number) => {
     return format(timestamp, "HH:mm")
   }
+
+  useEffect(() => {
+    pusherClient.subscribe(toPusherKey(`chat:${chatId}`))
+
+    // eslint-disable-next-line no-undef
+    const messageHandler = (message: Message) => {
+      setMessages(prev => [message, ...prev])
+    }
+
+    pusherClient.bind('incoming-message', messageHandler)
+
+    return () => {
+      pusherClient.unsubscribe(toPusherKey(`chat:${chatId}`))
+      pusherClient.unbind('incoming-message', messageHandler)
+    }
+  }, [chatId, sessionId])
+
   return (
     <div
       id='messages'

@@ -101,6 +101,7 @@ export default async function DashboardChatPage({ params: { chatId } }: IDashboa
         sessionId={session.user.id}
         chatPartner={chatPartner}
         sessionImage={session.user.image}
+        chatId={chatId}
       />
       <ChatInput chatPartner={chatPartner} chatId={chatId} />
     </div>
