@@ -1,5 +1,7 @@
 import { fetchRedis } from "@/helpers/redis"
 import { authOptions } from "@/lib/next-auth"
+import { pusherServer } from "@/lib/pusher"
+import { toPusherKey } from "@/lib/utils"
 import { Message, messageValidator } from "@/lib/validations/message"
 import { upstashRedis } from "@/services/upstash-redis"
 import { nanoid } from "nanoid"
@@ -44,6 +46,9 @@ export async function POST(req: Request) {
     }
 
     const message = messageValidator.parse(messageData)
+
+    // notify all connected chat room clients
+    pusherServer.trigger(toPusherKey(`chat:${chatId}`), 'incoming-message', message)
 
     // All valid, send the message
     await upstashRedis.zadd(`chat:${chatId}:messages`, {
