@@ -10,5 +10,3 @@ export default async function HomePage() {
     </main>
   )
 }
-
-// 06:28:37

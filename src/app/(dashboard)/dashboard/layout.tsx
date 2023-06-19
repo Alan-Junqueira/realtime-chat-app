@@ -67,7 +67,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             className='flex flex-1 flex-col gap-y-7'
           >
             <li>
-              <SidebarChatList friends={friends} sessionId={session.user.id}/>
+              <SidebarChatList friends={friends} sessionId={session.user.id} />
             </li>
             <li>
               <div className='text-xs font-semibold leading-6 text-gray-400'>
@@ -128,7 +128,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           </ul>
         </nav>
       </aside>
-      {children}
+
+      <aside className='max-h-screen container py-16 md:py-12 w-full '>
+        {children}
+      </aside>
     </div>
   )
 }
