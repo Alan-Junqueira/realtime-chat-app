@@ -4,11 +4,19 @@ import { pusherClient } from "@/lib/pusher";
 import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
+import { UnseenChatToast } from "./UnseenChatToast";
 
 interface ISidebarChatList {
   // eslint-disable-next-line no-undef
   friends: User[]
   sessionId: string
+}
+
+// eslint-disable-next-line no-undef
+interface IExtendedMessage extends Message {
+  senderImage: string
+  senderName: string
 }
 
 export const SidebarChatList = ({ friends, sessionId }: ISidebarChatList) => {
@@ -34,8 +42,23 @@ export const SidebarChatList = ({ friends, sessionId }: ISidebarChatList) => {
       router.refresh()
     }
 
-    const chatHandler = () => {
-      console.log('new chat message')
+    const chatHandler = (message: IExtendedMessage) => {
+      const shouldNotify = pathname !== `/dashboard/chat/${chatHrefConstructor(sessionId, message.senderId)}`
+
+      if (!shouldNotify) return
+
+      toast.custom(t => (
+        <UnseenChatToast
+          t={t}
+          sessionId={sessionId}
+          senderId={message.senderId}
+          senderImage={message.senderImage}
+          senderMessage={message.text}
+          senderName={message.senderName}
+        />
+      ))
+
+      setUnseenMessages(prev => [...prev, message])
     }
 
     pusherClient.bind('new_message', chatHandler)
@@ -49,7 +72,7 @@ export const SidebarChatList = ({ friends, sessionId }: ISidebarChatList) => {
       pusherClient.unbind('new_friend', newFriendHandler)
     }
 
-  }, [router, sessionId])
+  }, [pathname, router, sessionId])
 
   return (
     <ul
@@ -74,7 +97,7 @@ export const SidebarChatList = ({ friends, sessionId }: ISidebarChatList) => {
                 <div
                   className="bg-indigo-600 font-medium text-xm text-white w-4 h-4 rounded-full flex justify-center items-center"
                 >
-                  unseenMessagesCount
+                  {unseenMessagesCount}
                 </div>
               )}
             </a>
