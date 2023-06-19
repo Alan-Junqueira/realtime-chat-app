@@ -1,5 +1,7 @@
 import { fetchRedis } from "@/helpers/redis"
 import { authOptions } from "@/lib/next-auth"
+import { pusherServer } from "@/lib/pusher"
+import { toPusherKey } from "@/lib/utils"
 import { upstashRedis } from "@/services/upstash-redis"
 import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
@@ -29,6 +31,10 @@ export async function POST(req: Request) {
     if (!hasFriendRequest) {
       return new NextResponse('No friend request', { status: 400 })
     }
+
+    // Notify added user
+    pusherServer.trigger(toPusherKey(`user:${idToAdd}:friends`), 'new_friend', {})
+
     await Promise.all([
       upstashRedis.sadd(`user:${session.user.id}:friends`, idToAdd),
       upstashRedis.sadd(`user:${idToAdd}:friends`, session.user.id),
