@@ -1,6 +1,7 @@
 'use client'
 
-import { chatHrefConstructor } from "@/lib/utils";
+import { pusherClient } from "@/lib/pusher";
+import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -24,6 +25,31 @@ export const SidebarChatList = ({ friends, sessionId }: ISidebarChatList) => {
       })
     }
   }, [pathname])
+
+  useEffect(() => {
+    pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`))
+    pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`))
+
+    const newFriendHandler = () => {
+      router.refresh()
+    }
+
+    const chatHandler = () => {
+      console.log('new chat message')
+    }
+
+    pusherClient.bind('new_message', chatHandler)
+    pusherClient.bind('new_friend', newFriendHandler)
+
+    return () => {
+      pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:chats`))
+      pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`))
+
+      pusherClient.unbind('new_message', chatHandler)
+      pusherClient.unbind('new_friend', newFriendHandler)
+    }
+
+  }, [router, sessionId])
 
   return (
     <ul
