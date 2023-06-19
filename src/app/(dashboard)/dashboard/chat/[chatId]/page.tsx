@@ -3,7 +3,6 @@ import { Messages } from "@/components/Messages"
 import { fetchRedis } from "@/helpers/redis"
 import { authOptions } from "@/lib/next-auth"
 import { messageArrayValidator } from "@/lib/validations/message"
-import { upstashRedis } from "@/services/upstash-redis"
 import { getServerSession } from "next-auth"
 import Image from "next/image"
 import { notFound } from "next/navigation"
@@ -49,8 +48,9 @@ export default async function DashboardChatPage({ params: { chatId } }: IDashboa
   }
 
   const chatPartnerId = user.id === userId1 ? userId2 : userId1
+  const chatPartnerRaw = await fetchRedis('get', `user:${chatPartnerId}`) as string
   // eslint-disable-next-line no-undef
-  const chatPartner = await upstashRedis.get(`user:${chatPartnerId}`) as User
+  const chatPartner = JSON.parse(chatPartnerRaw) as User
   const initialMessages = await getChatMessages(chatId)
   return (
     <div

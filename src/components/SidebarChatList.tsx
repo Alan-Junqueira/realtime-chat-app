@@ -22,6 +22,8 @@ interface IExtendedMessage extends Message {
 export const SidebarChatList = ({ friends, sessionId }: ISidebarChatList) => {
   // eslint-disable-next-line no-undef
   const [unseenMessages, setUnseenMessages] = useState<Message[]>([]);
+  // eslint-disable-next-line no-undef
+  const [activeChats, setActiveChats] = useState<User[]>(friends);
 
   const router = useRouter()
   const pathname = usePathname()
@@ -38,8 +40,9 @@ export const SidebarChatList = ({ friends, sessionId }: ISidebarChatList) => {
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`))
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`))
 
-    const newFriendHandler = () => {
-      router.refresh()
+    // eslint-disable-next-line no-undef
+    const newFriendHandler = (newFriend: User) => {
+      setActiveChats(prev => [...prev, newFriend])
     }
 
     const chatHandler = (message: IExtendedMessage) => {
@@ -79,7 +82,7 @@ export const SidebarChatList = ({ friends, sessionId }: ISidebarChatList) => {
       role="list"
       className="max-h-[25rem] overflow-y-auto -mx-2 space-y-1"
     >
-      {friends.sort().map(friend => {
+      {activeChats && activeChats.sort().map(friend => {
         const unseenMessagesCount = unseenMessages.filter(unseenMessage => {
           return unseenMessage.senderId === friend.id
         }).length

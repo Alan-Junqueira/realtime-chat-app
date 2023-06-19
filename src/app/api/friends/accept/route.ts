@@ -32,10 +32,17 @@ export async function POST(req: Request) {
       return new NextResponse('No friend request', { status: 400 })
     }
 
-    // Notify added user
-    pusherServer.trigger(toPusherKey(`user:${idToAdd}:friends`), 'new_friend', {})
+    const [userRaw, friendRaw] = await Promise.all([
+      fetchRedis(`get`, `user:${session.user.id}`),
+      fetchRedis(`get`, `user:${idToAdd}`)
+    ]) as [string, string]
+
+    // eslint-disable-next-line no-undef
+    const [user, friend] = [JSON.parse(userRaw), JSON.parse(friendRaw)] as [User, User]
 
     await Promise.all([
+      pusherServer.trigger(toPusherKey(`user:${idToAdd}:friends`), 'new_friend', user),
+      pusherServer.trigger(toPusherKey(`user:${session.user.id}:friends`), 'new_friend', friend),
       upstashRedis.sadd(`user:${session.user.id}:friends`, idToAdd),
       upstashRedis.sadd(`user:${idToAdd}:friends`, session.user.id),
       // upstashRedis.srem(`user:${idToAdd}:incoming_friend_requests`, session.user.id)
